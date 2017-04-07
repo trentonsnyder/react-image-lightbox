@@ -332,7 +332,7 @@ class ReactImageLightbox extends Component {
     changeRotation(newRotation) {
         this.setState({
             rotation: newRotation
-        })
+        });
         document.getElementsByClassName('image-current')[0].style.transform = `rotate(${newRotation}deg)`;
     }
 
@@ -1399,8 +1399,8 @@ class ReactImageLightbox extends Component {
         const zoomOutButtonClasses = [styles.toolbarItemChild, styles.builtinButton, styles.zoomOutButton];
         let zoomInButtonHandler    = this.handleZoomInButtonClick;
         let zoomOutButtonHandler   = this.handleZoomOutButtonClick;
-        let rotateLeftHandler      = this.handleRotateLeftClick;
-        let rotateRightHandler     = this.handleRotateRightClick;
+        const rotateLeftHandler    = this.handleRotateLeftClick;
+        const rotateRightHandler   = this.handleRotateRightClick;
 
         // Disable zooming in when zoomed all the way in
         if (zoomLevel === MAX_ZOOM_LEVEL) {
@@ -1720,7 +1720,7 @@ ReactImageLightbox.propTypes = {
     // Set to false to disable zoom functionality and hide zoom buttons
     enableZoom: PropTypes.bool,
 
-    enableRotation: Proptypes.bool
+    enableRotation: PropTypes.bool
 };
 
 ReactImageLightbox.defaultProps = {
