@@ -30,8 +30,7 @@ import {
     SOURCE_TOUCH,
     SOURCE_POINTER,
     MIN_SWIPE_DISTANCE,
-    INCREMENT_ROTATION,
-    DECREMENT_ROTATION
+    ROTATION
 } from './constant';
 import baseStyles from './style.scss';
 
@@ -101,7 +100,9 @@ class ReactImageLightbox extends Component {
         this.requestClose             = this.requestClose.bind(this);
         this.requestMoveNext          = this.requestMoveNext.bind(this);
         this.requestMovePrev          = this.requestMovePrev.bind(this);
-        this.handleRotate             = this.handleRotate.bind(this);
+        this.handleRotateLeftClick    = this.handleRotateLeftClick.bind(this);
+        this.handleRotateRightClick   = this.handleRotateRightClick.bind(this);
+
     }
 
     componentWillMount() {
@@ -331,9 +332,9 @@ class ReactImageLightbox extends Component {
 
     changeRotation(newRotation) {
         this.setState({
-            rotation: newRotation
+            rotation: newRotation,
+            zoomLevel: MIN_ZOOM_LEVEL
         });
-        document.getElementsByClassName('image-current')[0].style.transform = `rotate(${newRotation}deg)`;
     }
 
     closeIfClickInner(event) {
@@ -1059,11 +1060,11 @@ class ReactImageLightbox extends Component {
     }
 
     handleRotateLeftClick() {
-        this.changeRotation(this.state.rotation + DECREMENT_ROTATION);
+        this.changeRotation(this.state.rotation - ROTATION);
     }
 
     handleRotateRightClick() {
-        this.changeRotation(this.state.rotation - INCREMENT_ROTATION);
+        this.changeRotation(this.state.rotation + ROTATION);
     }
 
     handleCaptionMousewheel(event) {
@@ -1258,6 +1259,7 @@ class ReactImageLightbox extends Component {
             offsetX,
             offsetY,
             isClosing,
+            rotation
         } = this.state;
 
         const boxSize = this.getLightboxRect();
@@ -1336,7 +1338,6 @@ class ReactImageLightbox extends Component {
 
             imageStyle.width  = bestImageInfo.width;
             imageStyle.height = bestImageInfo.height;
-
             const imageSrc = bestImageInfo.src;
             if (discourageDownloads) {
                 imageStyle.backgroundImage = `url('${imageSrc}')`;
@@ -1352,18 +1353,26 @@ class ReactImageLightbox extends Component {
                     </div>
                 );
             } else {
+                let rotateStyle;
+                if (imageClass === 'image-current ril-image-current') {
+                    rotateStyle = {...imageStyle, transform: `rotate(${rotation}deg)`, margin: '0 auto'};
+                } else {
+                    rotateStyle = {};
+                }
                 images.push(
-                    <img
-                        className={`${imageClass} ${styles.image}`}
-                        onDoubleClick={this.handleImageDoubleClick}
-                        onWheel={this.handleImageMouseWheel}
-                        onDragStart={e => e.preventDefault()}
-                        style={imageStyle}
-                        src={imageSrc}
-                        key={imageSrc + keyEndings[srcType]}
-                        alt={(typeof imageTitle === 'string' ? imageTitle : translate('Image'))}
-                        draggable={false}
-                    />
+                    <div key={imageClass} style={rotateStyle}>
+                        <img
+                            className={`${imageClass} ${styles.image}`}
+                            onDoubleClick={this.handleImageDoubleClick}
+                            onWheel={this.handleImageMouseWheel}
+                            onDragStart={e => e.preventDefault()}
+                            style={imageStyle}
+                            src={imageSrc}
+                            key={imageSrc + keyEndings[srcType]}
+                            alt={(typeof imageTitle === 'string' ? imageTitle : translate('Image'))}
+                            draggable={false}
+                        />
+                    </div>
                 );
             }
         };
@@ -1532,7 +1541,7 @@ class ReactImageLightbox extends Component {
                                     <button // Lightbox zoom in button
                                         type="button"
                                         key="rotate-left"
-                                        className={`rotate-left ril-rotate-left ${zoomInButtonClasses.join(' ')}`}
+                                        className={`rotate-left ril-rotate-left`}
                                         onClick={rotateLeftHandler}
                                     >Left</button>
                                 </li>
@@ -1542,7 +1551,7 @@ class ReactImageLightbox extends Component {
                                 <li className={`ril-toolbar__item ${styles.toolbarItem}`}>
                                     <button // Lightbox zoom in button
                                         type="button"
-                                        className={`rotate-right ril-rotate-right ${zoomInButtonClasses.join(' ')}`}
+                                        className={`rotate-right ril-rotate-right`}
                                         onClick={rotateRightHandler}
                                     >right</button>
                                 </li>
