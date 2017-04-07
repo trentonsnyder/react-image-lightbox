@@ -1544,7 +1544,7 @@ class ReactImageLightbox extends Component {
                                         type="button"
                                         className={`rotate-right ril-rotate-right ${zoomInButtonClasses.join(' ')}`}
                                         onClick={rotateRightHandler}
-                                    >Right</button>
+                                    >right</button>
                                 </li>
                             }
 
