@@ -333,6 +333,7 @@ class ReactImageLightbox extends Component {
         this.setState({
             rotation: newRotation
         })
+        document.getElementsByClassName('image-current')[0].style.transform = `rotate(${newRotation}deg)`;
     }
 
     closeIfClickInner(event) {
@@ -1526,25 +1527,24 @@ class ReactImageLightbox extends Component {
                                 <li key={i} className={`ril-toolbar__item ${styles.toolbarItem}`}>{button}</li>
                             ))}
 
-                            {enableRotate &&
+                            {enableRotation &&
                                 <li className={`ril-toolbar__item ${styles.toolbarItem}`}>
                                     <button // Lightbox zoom in button
                                         type="button"
                                         key="rotate-left"
                                         className={`rotate-left ril-rotate-left ${zoomInButtonClasses.join(' ')}`}
                                         onClick={rotateLeftHandler}
-                                    />
+                                    >Left</button>
                                 </li>
                             }
 
-                            {enableRotate &&
+                            {enableRotation &&
                                 <li className={`ril-toolbar__item ${styles.toolbarItem}`}>
                                     <button // Lightbox zoom in button
                                         type="button"
-                                        key="rotate-right"
                                         className={`rotate-right ril-rotate-right ${zoomInButtonClasses.join(' ')}`}
                                         onClick={rotateRightHandler}
-                                    />
+                                    >Right</button>
                                 </li>
                             }
 
@@ -1719,6 +1719,8 @@ ReactImageLightbox.propTypes = {
 
     // Set to false to disable zoom functionality and hide zoom buttons
     enableZoom: PropTypes.bool,
+
+    enableRotation: Proptypes.bool
 };
 
 ReactImageLightbox.defaultProps = {
@@ -1739,6 +1741,7 @@ ReactImageLightbox.defaultProps = {
     imagePadding:        10,
     clickOutsideToClose: true,
     enableZoom:          true,
+    enableRotation:        true
 };
 
 export default ReactImageLightbox;
