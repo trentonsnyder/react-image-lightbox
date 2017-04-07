@@ -29,7 +29,8 @@ import {
     SOURCE_MOUSE,
     SOURCE_TOUCH,
     SOURCE_POINTER,
-    MIN_SWIPE_DISTANCE
+    MIN_SWIPE_DISTANCE,
+    ROTATION
 } from './constant';
 import baseStyles from './style.scss';
 
@@ -75,6 +76,9 @@ class ReactImageLightbox extends Component {
 
             // Vertical offset from center
             offsetY: 0,
+
+            // Rotate deg
+            rotation: 0
         };
 
         this.closeIfClickInner        = this.closeIfClickInner.bind(this);
@@ -96,6 +100,9 @@ class ReactImageLightbox extends Component {
         this.requestClose             = this.requestClose.bind(this);
         this.requestMoveNext          = this.requestMoveNext.bind(this);
         this.requestMovePrev          = this.requestMovePrev.bind(this);
+        this.handleRotateLeftClick    = this.handleRotateLeftClick.bind(this);
+        this.handleRotateRightClick   = this.handleRotateRightClick.bind(this);
+
     }
 
     componentWillMount() {
@@ -320,6 +327,13 @@ class ReactImageLightbox extends Component {
             zoomLevel: nextZoomLevel,
             offsetX:   nextOffsetX,
             offsetY:   nextOffsetY,
+        });
+    }
+
+    changeRotation(newRotation) {
+        this.setState({
+            rotation: newRotation,
+            zoomLevel: MIN_ZOOM_LEVEL
         });
     }
 
@@ -1045,6 +1059,14 @@ class ReactImageLightbox extends Component {
         this.changeZoom(this.state.zoomLevel - ZOOM_BUTTON_INCREMENT_SIZE);
     }
 
+    handleRotateLeftClick() {
+        this.changeRotation(this.state.rotation - ROTATION);
+    }
+
+    handleRotateRightClick() {
+        this.changeRotation(this.state.rotation + ROTATION);
+    }
+
     handleCaptionMousewheel(event) {
         event.stopPropagation();
 
@@ -1158,6 +1180,7 @@ class ReactImageLightbox extends Component {
             zoomLevel: MIN_ZOOM_LEVEL,
             offsetX:   0,
             offsetY:   0,
+            rotation:  0,
         };
 
         // Enable animated states
@@ -1224,6 +1247,7 @@ class ReactImageLightbox extends Component {
             clickOutsideToClose,
             discourageDownloads,
             enableZoom,
+            enableRotation,
             imageTitle,
             nextSrc,
             prevSrc,
@@ -1235,6 +1259,7 @@ class ReactImageLightbox extends Component {
             offsetX,
             offsetY,
             isClosing,
+            rotation
         } = this.state;
 
         const boxSize = this.getLightboxRect();
@@ -1313,7 +1338,6 @@ class ReactImageLightbox extends Component {
 
             imageStyle.width  = bestImageInfo.width;
             imageStyle.height = bestImageInfo.height;
-
             const imageSrc = bestImageInfo.src;
             if (discourageDownloads) {
                 imageStyle.backgroundImage = `url('${imageSrc}')`;
@@ -1329,18 +1353,26 @@ class ReactImageLightbox extends Component {
                     </div>
                 );
             } else {
+                let rotateStyle;
+                if (imageClass === 'image-current ril-image-current') {
+                    rotateStyle = {...imageStyle, transform: `rotate(${rotation}deg)`, margin: '0 auto'};
+                } else {
+                    rotateStyle = {};
+                }
                 images.push(
-                    <img
-                        className={`${imageClass} ${styles.image}`}
-                        onDoubleClick={this.handleImageDoubleClick}
-                        onWheel={this.handleImageMouseWheel}
-                        onDragStart={e => e.preventDefault()}
-                        style={imageStyle}
-                        src={imageSrc}
-                        key={imageSrc + keyEndings[srcType]}
-                        alt={(typeof imageTitle === 'string' ? imageTitle : translate('Image'))}
-                        draggable={false}
-                    />
+                    <div key={imageClass} style={rotateStyle}>
+                        <img
+                            className={`${imageClass} ${styles.image}`}
+                            onDoubleClick={this.handleImageDoubleClick}
+                            onWheel={this.handleImageMouseWheel}
+                            onDragStart={e => e.preventDefault()}
+                            style={imageStyle}
+                            src={imageSrc}
+                            key={imageSrc + keyEndings[srcType]}
+                            alt={(typeof imageTitle === 'string' ? imageTitle : translate('Image'))}
+                            draggable={false}
+                        />
+                    </div>
                 );
             }
         };
@@ -1376,6 +1408,8 @@ class ReactImageLightbox extends Component {
         const zoomOutButtonClasses = [styles.toolbarItemChild, styles.builtinButton, styles.zoomOutButton];
         let zoomInButtonHandler    = this.handleZoomInButtonClick;
         let zoomOutButtonHandler   = this.handleZoomOutButtonClick;
+        const rotateLeftHandler    = this.handleRotateLeftClick;
+        const rotateRightHandler   = this.handleRotateRightClick;
 
         // Disable zooming in when zoomed all the way in
         if (zoomLevel === MAX_ZOOM_LEVEL) {
@@ -1501,6 +1535,27 @@ class ReactImageLightbox extends Component {
                             {!toolbarButtons ? '' : toolbarButtons.map((button, i) => (
                                 <li key={i} className={`ril-toolbar__item ${styles.toolbarItem}`}>{button}</li>
                             ))}
+
+                            {enableRotation &&
+                                <li className={`ril-toolbar__item ${styles.toolbarItem}`}>
+                                    <button // Lightbox zoom in button
+                                        type="button"
+                                        key="rotate-left"
+                                        className={`rotate-left ril-rotate-left`}
+                                        onClick={rotateLeftHandler}
+                                    >Left</button>
+                                </li>
+                            }
+
+                            {enableRotation &&
+                                <li className={`ril-toolbar__item ${styles.toolbarItem}`}>
+                                    <button // Lightbox zoom in button
+                                        type="button"
+                                        className={`rotate-right ril-rotate-right`}
+                                        onClick={rotateRightHandler}
+                                    >right</button>
+                                </li>
+                            }
 
                             {enableZoom &&
                                 <li className={`ril-toolbar__item ${styles.toolbarItem}`}>
@@ -1673,6 +1728,8 @@ ReactImageLightbox.propTypes = {
 
     // Set to false to disable zoom functionality and hide zoom buttons
     enableZoom: PropTypes.bool,
+
+    enableRotation: PropTypes.bool
 };
 
 ReactImageLightbox.defaultProps = {
@@ -1693,6 +1750,7 @@ ReactImageLightbox.defaultProps = {
     imagePadding:        10,
     clickOutsideToClose: true,
     enableZoom:          true,
+    enableRotation:        true
 };
 
 export default ReactImageLightbox;
