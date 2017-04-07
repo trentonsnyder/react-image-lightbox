@@ -37,3 +37,7 @@ export const SOURCE_POINTER = 3;
 
 // Minimal swipe distance
 export const MIN_SWIPE_DISTANCE = 200;
+
+// Rotations
+export const INCREMENT_ROTATION = 90;
+export const DECREMENT_ROTATION = -90;
