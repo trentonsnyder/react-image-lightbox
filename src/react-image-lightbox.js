@@ -102,7 +102,6 @@ class ReactImageLightbox extends Component {
         this.requestMovePrev          = this.requestMovePrev.bind(this);
         this.handleRotateLeftClick    = this.handleRotateLeftClick.bind(this);
         this.handleRotateRightClick   = this.handleRotateRightClick.bind(this);
-
     }
 
     componentWillMount() {
@@ -1541,7 +1540,7 @@ class ReactImageLightbox extends Component {
                                     <button // Lightbox zoom in button
                                         type="button"
                                         key="rotate-left"
-                                        className={`rotate-left ril-rotate-left`}
+                                        className="rotate-left ril-rotate-left"
                                         onClick={rotateLeftHandler}
                                     >Left</button>
                                 </li>
@@ -1551,7 +1550,7 @@ class ReactImageLightbox extends Component {
                                 <li className={`ril-toolbar__item ${styles.toolbarItem}`}>
                                     <button // Lightbox zoom in button
                                         type="button"
-                                        className={`rotate-right ril-rotate-right`}
+                                        className="rotate-right ril-rotate-right"
                                         onClick={rotateRightHandler}
                                     >right</button>
                                 </li>
